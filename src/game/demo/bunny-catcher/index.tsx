@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Stage, Text, useTick } from "@pixi/react";
-import { TCBProps, useCreateGameObject } from "../hooks/useCreateGameObject";
-import { GameContainer } from "../components/GameContainer";
-import { TDimensions } from "../types/TDimensions";
-import { isOffEdge } from "../functions/isOffEdge";
 import random from "lodash/random";
+import { TCBProps, useCreateGameObject } from "../../hooks/useCreateGameObject";
+import { GameContainer } from "../../components/GameContainer";
+import { TDimensions } from "../../types/TDimensions";
+import { isOffEdge } from "../../functions/isOffEdge";
 
 const DIMENSIONS: TDimensions = {
   width: 1280,
@@ -109,7 +109,7 @@ const GameDemo = () => {
 };
 
 // Обертка игры
-export const GameDemoWrapper = () => {
+export const BunnyCatcher = () => {
   return (
     <Stage
       {...DIMENSIONS}

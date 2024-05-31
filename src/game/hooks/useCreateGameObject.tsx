@@ -1,15 +1,19 @@
-import { Sprite } from "@pixi/react";
+import { AnimatedSprite, Sprite } from "@pixi/react";
 import "@pixi/events";
 import { useState } from "react";
 import { TGameObjectParameters } from "../types/TGameObjectParameters";
-import { Rectangle } from "pixi.js";
+import { Texture, Rectangle, Resource } from "@pixi/core";
 
 export type TCBProps = { x: number; y: number };
 
 type TCollisionBlocks = ({ x, y }: TCBProps) => TGameObjectParameters[];
 
 export interface IGameObject {
-  image: string;
+  image?: string;
+  animation?: {
+    frames: Texture<Resource>[];
+    speed: number;
+  };
   size: {
     width: number;
     height: number;
@@ -25,6 +29,7 @@ export interface IGameObject {
 
 export const useCreateGameObject = ({
   image,
+  animation,
   size,
   collisionBlocks,
   isCollisionBlocksVisible,
@@ -33,6 +38,7 @@ export const useCreateGameObject = ({
 }: IGameObject) => {
   const [x, setX] = useState(startingPosition?.x || 0);
   const [y, setY] = useState(startingPosition?.y || 0);
+  const [frames, setFrames] = useState(animation?.frames);
 
   const collisionBlocksAtTheMoment = collisionBlocks({ x, y });
 
@@ -45,20 +51,35 @@ export const useCreateGameObject = ({
     : {};
 
   return {
-    sprite: () => (
-      <>
-        <Sprite image={image} {...size} x={x} y={y} {...interactiveObj} />
-        {isCollisionBlocksVisible
-          ? collisionBlocksAtTheMoment.map((cb, index) => (
-              <Sprite
-                key={index}
-                {...cb}
-                image="https://dummyimage.com/600x400/sdcdsc/fff&text=+"
-              />
-            ))
-          : null}
-      </>
-    ),
+    sprite: () => {
+      return (
+        <>
+          {image ? (
+            <Sprite image={image} {...size} x={x} y={y} {...interactiveObj} />
+          ) : null}
+          {animation ? (
+            <AnimatedSprite
+              textures={frames}
+              isPlaying
+              animationSpeed={animation.speed}
+              {...size}
+              x={x}
+              y={y}
+              {...interactiveObj}
+            />
+          ) : null}
+          {isCollisionBlocksVisible
+            ? collisionBlocksAtTheMoment.map((cb, index) => (
+                <Sprite
+                  key={index}
+                  {...cb}
+                  image="https://dummyimage.com/600x400/sdcdsc/fff&text=+"
+                />
+              ))
+            : null}
+        </>
+      );
+    },
     parameters: {
       width: size.width,
       height: size.height,
@@ -67,6 +88,7 @@ export const useCreateGameObject = ({
     } as TGameObjectParameters,
     setX,
     setY,
+    setFrames,
     collisionBlocksAtTheMoment,
   };
 };
